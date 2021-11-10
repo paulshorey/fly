@@ -8,13 +8,8 @@ const DEBUG1 = false; // which stuff to hide/show
 const DEBUG2 = false; // localStorage/indexDB
 const DEBUG3 = false; // buttons inside cookie banner
 const DEBUG4 = false; // buttons inside cookie banner - advanced
-const body = document.getElementsByTagName("body");
 
-const options: Types.options = {
-  _showBottomLeftButtons: true,
-  _hidePopupsAndAds: true,
-  _fixGooglePreferences: true,
-};
+const options: Types.options = {};
 chrome.runtime.sendMessage({ action: "get", key: "_showBottomLeftButtons" });
 setTimeout(function () {
   chrome.runtime.sendMessage({ action: "get", key: "_hidePopupsAndAds" });
@@ -23,13 +18,15 @@ setTimeout(function () {
 
 chrome.runtime.onMessage.addListener((message) => {
   console.log(`content.ts message received: ${JSON.stringify(message)}`);
-  options[message.key] = message.value;
   
   switch (message.key) {
     case "_showBottomLeftButtons":
       _showBottomLeftButtons(message.value);
       break;
     case "_hidePopupsAndAds":
+      if (message.value===false && options._hidePopupsAndAds===true) {
+        window.location.reload();
+      }
       _hidePopupsAndAds(message.value);
     break;
     case "_fixGooglePreferences":
@@ -38,5 +35,14 @@ chrome.runtime.onMessage.addListener((message) => {
     default:
     break;
   }
+
+  options[message.key] = message.value;
+  /*
+   * ISSUES
+  
+  Global enable/disable almost works. Click to disable, and it reloads the page. On page reload, "_hidePopupsAndAds" is hidden and disabled. BUT THEN, click to enable again, and it sets the value to "false", as if it was "true" before.
+
+  Related issue - how to show true/false checkbox in popup?
+   */
 });
 

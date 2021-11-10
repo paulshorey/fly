@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as Types from '../../types';
-
 // interface PropsTypes {
 //   options: (Types.options)
 // }
@@ -13,7 +12,7 @@ export const EnableFlyswatterIcon = () => {
     // initially, get data
     for (let key in options) {
       chrome.storage.local.get(key, (result) => {
-        options[key] = result[key] || options[key];
+        options[key] = result[key];
       });
     }
     setOptions({ ...options });
@@ -31,12 +30,19 @@ export const EnableFlyswatterIcon = () => {
 
   return (
     <div className="buttonContainer">
-      <button className="snowButton" onClick={() => { onClick('_hidePopupsAndAds') }}>
-        Remove annoying popups and ads
-      </button>
-      <button className="snowButton" onClick={() => { onClick('_showBottomLeftButtons') }}>
-        Ok to show site-specific buttons in bottom left corner
-      </button>
+      {"_hidePopupsAndAds" in options && (
+        <button onClick={() => { onClick('_hidePopupsAndAds') }}>
+          Remove annoying popups and ads = <b>{JSON.stringify(options['_hidePopupsAndAds'])}</b>
+        </button>
+      )}
+      {"_showBottomLeftButtons" in options && (
+        <button onClick={() => { onClick('_showBottomLeftButtons') }}>
+          Ok to show site-specific buttons in bottom left corner = <b>{JSON.stringify(options['_hidePopupsAndAds'])}</b>
+        </button>
+      )}
+      <p>
+        {JSON.stringify(options)}
+      </p>
     </div>
   );
 };

@@ -15,14 +15,16 @@ export default function showBottomLeftButton({ key, enabled, label, host, disabl
     newEl.innerHTML = label;
     newEl.onclick = function () {
       window.localStorage.setItem(key + '-disable-' + host, enabled); // NOTE: disabled === !enabled
-      if (!enabled) {
-        // if enabling, no need to reload, because will run now immediately
-        // just need to tell the browser extension to execute this module again
-        chrome.runtime.sendMessage({ action: 'get', key });
-      } else {
-        // if disabling, need to reload page because page content (ads, popups) was lost when enabled
-        window.location.reload();
-      }
+      // reload the page (or do any other browser extension global maintenance) (if needed)
+      chrome.runtime.sendMessage({ action: 'get', key });
+      // if (!enabled) {
+      //   // if enabling, no need to reload, because will run now immediately
+      //   // just need to tell the browser extension to execute this module again
+      //   chrome.runtime.sendMessage({ action: 'get', key });
+      // } else {
+      //   // if disabling, need to reload page because page content (ads, popups) was lost when enabled
+      //   window.location.reload();
+      // }
     };
     window.document.querySelector('._showBottomLeftButtons')?.appendChild(newEl);
   }
