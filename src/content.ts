@@ -22,7 +22,7 @@ setTimeout(function () {
 }, 1000);
 
 chrome.runtime.onMessage.addListener((message) => {
-  console.log(`content.ts: message received: ${JSON.stringify(message)}`);
+  console.log(`content.ts message received: ${JSON.stringify(message)}`);
   options[message.key] = message.value;
   
   switch (message.key) {

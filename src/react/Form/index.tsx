@@ -32,10 +32,10 @@ export const EnableFlyswatterIcon = () => {
   return (
     <div className="buttonContainer">
       <button className="snowButton" onClick={() => { onClick('_hidePopupsAndAds') }}>
-        {options._hidePopupsAndAds ? "Remove annoying popups and ads" : "Ignore (ok to show) popups and ads"}
+        Remove annoying popups and ads
       </button>
       <button className="snowButton" onClick={() => { onClick('_showBottomLeftButtons') }}>
-        {options._showBottomLeftButtons ? "Disable flyswatter icon" : "Enable flyswatter icon"}
+        Ok to show site-specific buttons in bottom left corner
       </button>
     </div>
   );

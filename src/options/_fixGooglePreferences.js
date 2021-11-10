@@ -5,6 +5,7 @@ const label = 'G';
 export default function (enabledGlobally) {
   if (!enabledGlobally) {
     showBottomLeftButton({ key, disabledGlobally: true });
+    return;
   }
 
   let enabled = true;
