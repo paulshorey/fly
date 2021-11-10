@@ -1,4 +1,4 @@
 export default {
-  _showBottomLeftButtons: true,
+  _modifyHost: true,
   _hidePopupsAndAds: true,
 };

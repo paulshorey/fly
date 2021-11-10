@@ -1,6 +1,8 @@
-import showBottomLeftButton from '../lib/showBottomLeftButton';
+import showBottomLeftButton from './showBottomLeftButton';
+import hideGoogleAds from './googleHideAds';
+
 const key = '_hidePopupsAndAds';
-const label = 'X';
+const label = 'clean';
 
 export default function (enabledGlobally) {
   if (!enabledGlobally) {
@@ -30,7 +32,7 @@ export default function (enabledGlobally) {
 
   // run
   showBottomLeftButton({ key, enabled: true, label, host });
-  _hidePopupsAndAds();
+  _hidePopupsAndAds({ host });
   setTimeout(_hidePopupsAndAds, 1000);
   setTimeout(_hidePopupsAndAds, 3000);
   setTimeout(_hidePopupsAndAds, 5000);
@@ -79,27 +81,20 @@ function invisibleEl(el, because = '') {
   el.style.setProperty('pointer-events', 'none', 'important');
 }
 
-function _hidePopupsAndAds() {
+function _hidePopupsAndAds({ host }) {
   console.warn('Kill popups and ads on page...');
   let DEBUG1 = false; // which stuff to hide/show
   let DEBUG2 = false; // localStorage/indexDB
   let DEBUG3 = false; // buttons inside cookie banner
   let DEBUG4 = false; // buttons inside cookie banner - advanced
+
   /*
-   * SHORTCUT (for development)
+   * GOOGLE specific fixes
    */
-  if (!window.getelbyid) {
-    window.getelbyid = function (selector) {
-      window.el = document.querySelector(selector);
-    };
+  if (host === 'google.com') {
+    hideGoogleAds();
+    return;
   }
-  if (!window.el) {
-    window.el = window.getelbyid;
-  }
-  if (DEBUG1)
-    console.log(
-      ' -------------------------------------- running extension hidePopupsAndAds() -------------------------------------- '
-    );
 
   /*
    * FREEZE GIFs

@@ -9,7 +9,8 @@ export interface message {
 }
 
 export const defaultOptions = {
-  _showBottomLeftButtons: true,
-  _hidePopupsAndAds: true,
-  _fixGooglePreferences: true
+  _modifyHost: true,
+  _google50Results: true,
+  _googleNewTab: true,
+  _hidePopupsAndAds: true
 }

@@ -5,6 +5,13 @@ import * as Types from '../../types';
 // }
 // : React.FC<PropsTypes>
 
+/*
+
+Get extension data (from database server || from chrome.storage.local )
+Get site data ( from database server || from window.localStorage )
+
+*/
+
 export const EnableFlyswatterIcon = () => {
 
   const [options, setOptions] = React.useState<Types.options>(Types.defaultOptions);
@@ -35,8 +42,8 @@ export const EnableFlyswatterIcon = () => {
           Remove annoying popups and ads = <b>{JSON.stringify(options['_hidePopupsAndAds'])}</b>
         </button>
       )}
-      {"_showBottomLeftButtons" in options && (
-        <button onClick={() => { onClick('_showBottomLeftButtons') }}>
+      {"_modifyHost" in options && (
+        <button onClick={() => { onClick('_modifyHost') }}>
           Ok to show site-specific buttons in bottom left corner = <b>{JSON.stringify(options['_hidePopupsAndAds'])}</b>
         </button>
       )}

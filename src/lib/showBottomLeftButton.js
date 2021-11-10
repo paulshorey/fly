@@ -26,6 +26,6 @@ export default function showBottomLeftButton({ key, enabled, label, host, disabl
       //   window.location.reload();
       // }
     };
-    window.document.querySelector('._showBottomLeftButtons')?.appendChild(newEl);
+    window.document.querySelector('._modifyHost')?.appendChild(newEl);
   }
 }
