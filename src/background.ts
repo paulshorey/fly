@@ -21,10 +21,7 @@ const saveMessage = (message:Types.message) => {
 /*
  * State
 */
-const options:Types.options = {
-  SHOW_FLYSWATTER_ICON: true,
-  KILL_POPUPS_AND_ADS: true
-}
+const options:Types.options = Types.defaultOptions
 for (let key in options) {
   chrome.storage.local.get(key, (result) => {
     options[key] = result[key] || options[key];

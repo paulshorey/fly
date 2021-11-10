@@ -1,0 +1,13 @@
+{
+  "printWidth": 100,
+  "semi": true,
+  "quoteProps": "consistent",
+  "singleQuote": true,
+  "jsxBracketSameLine": false,
+  "arrowParens": "always",
+  "prettier/prettier": [
+    {
+      "endOfLine": "auto"
+    }
+  ]
+}
