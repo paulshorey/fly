@@ -1,19 +1,24 @@
-#toggleFlySwatter {
+._showBottomLeftButtons {
   position: fixed;
-  bottom: 3px;
-  left: 7px;
+  bottom: 5px;
+  left: 5px;
   z-index: 2147483647;
   cursor: pointer;
-}
-#toggleFlySwatter img {
-  margin-right: 0;
-  height: 18px;
-  width: 18px;
-  display: inline;
-  border: none;
-}
-#toggleFlySwatter img.toggleFlySwatter-is-disabled {
-  opacity: 0.125;
+  padding: 0;
+  > div {
+    border: solid 1px black;
+    &._this_is_disabled {
+      opacity: 0.125;
+    }
+
+    img {
+      margin-right: 0;
+      height: 18px;
+      width: 18px;
+      display: inline;
+      border: none;
+    }
+  }
 }
 
 .snowflakes {

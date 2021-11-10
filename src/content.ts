@@ -1,33 +1,39 @@
 import "./content.scss";
 import * as Types from "./types";
-import hidePopupsAndAds from "./options/hidePopupsAndAds"
-import showFlySwatterIcon from "./options/showFlySwatterIcon"
+import _hidePopupsAndAds from "./options/_hidePopupsAndAds"
+import _showBottomLeftButtons from "./lib/_showBottomLeftButtons"
+import _fixGooglePreferences from "./options/_fixGooglePreferences"
 
-console.log(`\n\n\nContent.ts file ran\n\n\n`);
 const DEBUG1 = false; // which stuff to hide/show
 const DEBUG2 = false; // localStorage/indexDB
 const DEBUG3 = false; // buttons inside cookie banner
 const DEBUG4 = false; // buttons inside cookie banner - advanced
 const body = document.getElementsByTagName("body");
 
-const options: Types.options = Types.defaultOptions;
-chrome.runtime.sendMessage({ action: "get", key: "SHOW_FLYSWATTER_ICON" });
-chrome.runtime.sendMessage({ action: "get", key: "HIDE_POPUPS_AND_ADS" });
+const options: Types.options = {
+  _showBottomLeftButtons: true,
+  _hidePopupsAndAds: true,
+  _fixGooglePreferences: true,
+};
+chrome.runtime.sendMessage({ action: "get", key: "_showBottomLeftButtons" });
+setTimeout(function () {
+  chrome.runtime.sendMessage({ action: "get", key: "_hidePopupsAndAds" });
+  chrome.runtime.sendMessage({ action: "get", key: "_fixGooglePreferences" });
+}, 1000);
 
 chrome.runtime.onMessage.addListener((message) => {
-  console.log(`\n\n\nContent.ts: message received: ${JSON.stringify(message)}`);
+  console.log(`content.ts: message received: ${JSON.stringify(message)}`);
   options[message.key] = message.value;
-  showFlySwatterIcon(options);
   
   switch (message.key) {
-    case "HIDE_POPUPS_AND_ADS":
-      if (message.value) {
-        setTimeout(hidePopupsAndAds, 1000)
-        setTimeout(hidePopupsAndAds, 2000)
-        setTimeout(hidePopupsAndAds, 4000)
-      } else {
-        // window.location.reload();
-      }
+    case "_showBottomLeftButtons":
+      _showBottomLeftButtons(message.value);
+      break;
+    case "_hidePopupsAndAds":
+      _hidePopupsAndAds(message.value);
+    break;
+    case "_fixGooglePreferences":
+      _fixGooglePreferences(message.value);
     break;
     default:
     break;

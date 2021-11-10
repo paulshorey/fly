@@ -1,7 +1,63 @@
+import showBottomLeftButton from '../lib/showBottomLeftButton';
+const key = '_hidePopupsAndAds';
+const label = 'X';
+
+export default function (enabledGlobally) {
+  if (!enabledGlobally) {
+    showBottomLeftButton({ key, disabledGlobally: true });
+  }
+
+  let enabled = true;
+  let host = window.location.host.replace('www.', '');
+
+  if (enabled) {
+    let local = window.localStorage.getItem(key + '-disable-' + host);
+    if (typeof local === 'string') {
+      enabled = !JSON.parse(local);
+    } else {
+      if (host.split('.').length > 2) {
+        enabled = false;
+      }
+    }
+  }
+
+  // do not run
+  if (!enabled) {
+    showBottomLeftButton({ key, enabled: false, label, host });
+    return;
+  }
+
+  // run
+  showBottomLeftButton({ key, enabled: true, label, host });
+  _hidePopupsAndAds();
+  setTimeout(_hidePopupsAndAds, 1000);
+  setTimeout(_hidePopupsAndAds, 3000);
+  setTimeout(_hidePopupsAndAds, 5000);
+}
+
 /*
  * Lib
  */
-export function hideEl(el, because = '', force = false) {
+
+function is_gif_image(i) {
+  return /^(?!data:).*\.gif/i.test(i.src);
+}
+
+function freeze_gif(i) {
+  let c = document.createElement('canvas');
+  let w = (c.width = i.width);
+  let h = (c.height = i.height);
+  c?.getContext('2d')?.drawImage(i, 0, 0, w, h);
+  try {
+    i.src = c.toDataURL('image/gif'); // if possible, retain all css aspects
+  } catch (e) {
+    // cross-domain -- mimic original with all its tag attributes
+    for (let j = 0, a; (a = i.attributes[j]); j++) c.setAttribute(a.name, a.value);
+    i.parentNode.replaceChild(c, i);
+  }
+}
+
+function hideEl(el, because = '', force = false) {
   if (!force) {
     if (
       el._width > Math.max(410, window.innerWidth / 3) &&
@@ -16,27 +72,18 @@ export function hideEl(el, because = '', force = false) {
   el.style.setProperty('pointer-events', 'none', 'important');
 }
 
-export function invisibleEl(el, because = '') {
+function invisibleEl(el, because = '') {
   el.style.setProperty('opacity', '0', 'important');
   el.style.setProperty('visibility', 'hidden', 'important');
   el.style.setProperty('pointer-events', 'none', 'important');
 }
 
-/*
- * Hide Annoying Annoyances
- */
-export default function () {
-  console.log('\n\n\nKill popups and ads on page...\n\n\n');
+function _hidePopupsAndAds() {
+  console.warn('Kill popups and ads on page...');
   let DEBUG1 = false; // which stuff to hide/show
   let DEBUG2 = false; // localStorage/indexDB
   let DEBUG3 = false; // buttons inside cookie banner
   let DEBUG4 = false; // buttons inside cookie banner - advanced
-
-  /*
-   *
-   * RUN FLY SWATTER
-   *
-   */
   /*
    * SHORTCUT (for development)
    */
@@ -50,7 +97,7 @@ export default function () {
   }
   if (DEBUG1)
     console.log(
-      ' -------------------------------------- running extension removeAnnoyingAnnoyances() -------------------------------------- '
+      ' -------------------------------------- running extension hidePopupsAndAds() -------------------------------------- '
     );
 
   /*

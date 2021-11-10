@@ -1,12 +1,12 @@
 import * as React from "react";
-import ToggleOptions from "./ToggleOptions";
+import Form from "./Form";
 // import theme from 'src/styles/theme';
 // import GlobalStyle from 'src/styles';
 
 const App = () => {
   return (
     <div>
-      <ToggleOptions />
+      <Form />
     </div>
   );
 };

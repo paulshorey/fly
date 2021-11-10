@@ -1,4 +1,4 @@
 export default {
-  SHOW_FLYSWATTER_ICON: true,
-  HIDE_POPUPS_AND_ADS: true,
+  _showBottomLeftButtons: true,
+  _hidePopupsAndAds: true,
 };
