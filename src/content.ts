@@ -24,16 +24,17 @@ chrome.runtime.onMessage.addListener((message) => {
       _showBottomLeftButtons(message.value);
       break;
     case "_hidePopupsAndAds":
-      if (message.value===false && options._hidePopupsAndAds===true) {
+      if (message.value === false && options._hidePopupsAndAds === true) {
         window.location.reload();
       }
       _hidePopupsAndAds(message.value);
-    break;
+      break;
     case "_fixGooglePreferences":
       _fixGooglePreferences(message.value);
-    break;
+      break;
     default:
-    break;
+      break;
   }
-
+  
   options[message.key] = message.value;
+})
