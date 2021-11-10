@@ -37,12 +37,3 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 
   options[message.key] = message.value;
-  /*
-   * ISSUES
-  
-  Global enable/disable almost works. Click to disable, and it reloads the page. On page reload, "_hidePopupsAndAds" is hidden and disabled. BUT THEN, click to enable again, and it sets the value to "false", as if it was "true" before.
-
-  Related issue - how to show true/false checkbox in popup?
-   */
-});
-
