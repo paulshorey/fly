@@ -13,16 +13,16 @@ export default function (enabledGlobally) {
   let enabled = true;
   let host = window.location.host.replace('www.', '');
 
-  if (enabled) {
-    let local = window.localStorage.getItem(key + '-disable-' + host);
-    if (typeof local === 'string') {
-      enabled = !JSON.parse(local);
-    } else {
-      if (host.split('.').length > 2) {
-        enabled = false;
-      }
-    }
-  }
+  // if (enabled) {
+  //   let local = window.localStorage.getItem(key + '-disable-' + host);
+  //   if (typeof local === 'string') {
+  //     enabled = !JSON.parse(local);
+  //   } else {
+  //     if (host.split('.').length > 2) {
+  //       enabled = false;
+  //     }
+  //   }
+  // }
 
   // do not run
   if (!enabled) {

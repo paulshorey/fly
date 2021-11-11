@@ -1,12 +1,12 @@
-const webpack = require('webpack');
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+import webpack from 'webpack';
+import path from 'path';
+import CopyPlugin from 'copy-webpack-plugin';
 
 const config = {
   entry: {
-    popup: path.join(__dirname, 'src/popup.tsx'),
-    content: path.join(__dirname, 'src/content.ts'),
-    background: path.join(__dirname, 'src/background.ts'),
+    popup: path.join(__dirname, 'src/popup.js'),
+    content: path.join(__dirname, 'src/content.js'),
+    background: path.join(__dirname, 'src/background.js'),
   },
   output: { path: path.join(__dirname, 'dist'), filename: '[name].js' },
   module: {
@@ -26,7 +26,7 @@ const config = {
       //   exclude: /\.module\.css$/,
       // },
       {
-        test: /\.ts(x)?$/,
+        test: /\.js(x)?$/,
         loader: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -62,7 +62,7 @@ const config = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.tsx', '.ts'],
+    extensions: ['.js', '.jsx', '.js', '.js'],
     alias: {
       'react-dom': '@hot-loader/react-dom',
     },
@@ -78,4 +78,4 @@ const config = {
   ],
 };
 
-module.exports = config;
+export default config;
