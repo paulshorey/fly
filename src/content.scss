@@ -1,24 +1,18 @@
-._hosts {
+.saveTheWeb_bottomLeftButtons {
   position: fixed;
   bottom: 5px;
   left: 5px;
   z-index: 2147483647;
   cursor: pointer;
   padding: 0;
-  &._this_is_disabled {
-    display: none;
+  &.saveTheWeb_disabled {
+    opacity: 0.125;
   }
-  > div {
-    &._this_is_disabled {
-      opacity: 0.125;
-    }
-
-    img {
-      margin-right: 0;
-      height: 18px;
-      width: 18px;
-      display: inline;
-      border: none;
-    }
+  img {
+    margin-right: 0;
+    height: 18px;
+    width: 18px;
+    display: inline;
+    border: none;
   }
 }

@@ -3,9 +3,6 @@
  */
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Popup from './popup/Popup';
-import './popup.scss';
-alert('popup.js loaded');
+import EditOptions from './react/EditOptions';
 
-var mountNode = document.getElementById('popup');
-ReactDOM.render(<Popup />, mountNode);
+ReactDOM.render(<EditOptions />, document.getElementById('saveTheWeb_extensionPopup'));

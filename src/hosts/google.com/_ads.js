@@ -1,4 +1,4 @@
-export default function fixGoogleAds() {
+export default function ads() {
   let num_search_results = Array.from(window.document.body.querySelectorAll('#search h3')).length;
   // hide ads and annoying content
   // let selectors = ['#taw','#botstuff','#bottomads']
