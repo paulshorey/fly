@@ -1,4 +1,4 @@
-import { chromeStorageLocalGet } from './lib/chromeStorageLocal';
+import { chromeStorageLocalGet, chromeStorageLocalSet } from './lib/chromeStorageLocalAsync';
 
 /*
  * Starts on browser launch or on extension install.
@@ -7,49 +7,56 @@ import { chromeStorageLocalGet } from './lib/chromeStorageLocal';
  * Types of messages:
  * 1. Controls:
  *    { key: _botomLeftButtons, value: true }
- *    { key: _hosts, value: {"paulshorey.com":{"popupBanners":true}} }
+ *    { key: _hosts, value: {"paulshorey.com":{"_popups":true}} }
  * 2. Host:
  *    (on each site, specify which features to run. By default, all available features will be run)
- *    { key: "spiral.us", value: {"popupBanners":false} }
- *    { key: "independent.co.uk", value: {"popupBanners":true} }
- *    { key: "google.com", value: {"newTab":true, "moreResults":true} }
- *    { key: "amazon.com", value: {"productAds":true, "andSearch":true} }
- *    { key: "bing.com", value: {"andSearch":true} }
+ *    { key: "spiral.us", value: {"_popups":false} }
+ *    { key: "independent.co.uk", value: {"_popups":true} }
+ *    { key: "google.com", value: {"_ui":true, "_search":true} }
+ *    { key: "amazon.com", value: {"_ads":true, "_search":true} }
+ *    { key: "bing.com", value: {"_search":true} }
  */
+const data = {
+  get time() {
+    return new Date().getHours() - 12 + ':' + new Date().getMinutes();
+  },
+};
 
 const defaults = {
-  _hosts: {},
+  _version: data.time,
+  _hosts: null,
   _bottomLeftButtons: true,
-  _newTab: true,
-  _moreResults: true,
-  _popupBanners: true,
-  _andSearch: true,
-  _productAds: true,
+  _ui: true,
+  _popups: false,
+  _search: true,
+  _ads: true,
 };
 
-const controls = {
-  ...defaults,
+const updateControlsValue = (message) => {
+  if (!('value' in message)) {
+    message.status = 'updateControlsValue !value';
+    if (message.key in defaults) {
+      message.status = 'updateControlsValue default found ' + defaults[message.key];
+      message.value = controls[message.key];
+      return;
+    }
+  }
 };
-
-const saveToControls = async (message) => {
-  controls[message.key] = message.value;
-};
-
-const saveToHosts = async (host) => {
-  controls._hosts[host.key] = host.value;
-  syncMessage({ key: '_hosts', value: controls._hosts });
-};
-
-const syncHostValueKeys = (host) => {
+const updateHostValue = (host) => {
+  host.status = 'updateHostValue';
   if (!host.value) {
     host.value = {};
   }
+  /*
+   * TODO - AUTOMATE THESE DOMAINS - GET FROM FILESYSTEM
+   */
   switch (host.key) {
     case 'google.com':
       host.value = {
         ...{
-          newTab: controls['_newTab'],
-          moreResults: controls['_moreResults'],
+          _ads: controls['_ads'],
+          _search: controls['_search'],
+          _ui: controls['_ui'],
         },
         ...host.value,
       };
@@ -57,8 +64,8 @@ const syncHostValueKeys = (host) => {
     case 'amazon.com':
       host.value = {
         ...{
-          productAds: controls['_productAds'],
-          andSearch: controls['_andSearch'],
+          _ads: controls['_ads'],
+          _search: controls['_search'],
         },
         ...host.value,
       };
@@ -66,7 +73,7 @@ const syncHostValueKeys = (host) => {
     case 'bing.com':
       host.value = {
         ...{
-          andSearch: controls['_andSearch'],
+          _search: controls['_search'],
         },
         ...host.value,
       };
@@ -74,7 +81,7 @@ const syncHostValueKeys = (host) => {
     default:
       host.value = {
         ...{
-          popupBanners: controls['_popupBanners'],
+          _popups: controls['_popups'],
         },
         ...host.value,
       };
@@ -83,37 +90,41 @@ const syncHostValueKeys = (host) => {
 };
 
 const syncMessage = async (message = {}) => {
+  alert(JSON.stringify(message));
   if (!message.key) {
     return;
   }
-  if (!('value' in message)) {
-    // get value
-    let value = await chromeStorageLocalGet(message.key);
-    if (value === undefined || value === null) {
-      value = defaults[message.key];
-      if (value === undefined) {
-        value = null;
-      }
-    } else {
-      value = JSON.parse(value);
+  if (message.key === '__reset') {
+    chrome.storage.local.clear();
+    controls = { ...defaults };
+    for (let key in controls) {
+      syncMessage({ key });
     }
-    message.value = value;
-  } else {
-    // alert('save message value ' + JSON.stringify(message));
-    // save value
-    chrome.storage.local.set({
-      key: message.key,
-      value: JSON.stringify(message.value),
-    });
+    return;
   }
-  // if host type
-  if (message.key[0] !== '_' && message.key.includes('.')) {
-    // update value
-    syncHostValueKeys(message);
-    saveToHosts(message);
+  if (!'value' in message) {
+    await chromeStorageLocalGet(message);
+  }
+  // renew the message with new codebase stuff after getting from local storage
+  if (message.key[0] === '_' && !message.key.includes('.')) {
+    // type: control
+    message.status = 'readMessage before updateControlsValue';
+    updateControlsValue(message);
   } else {
-    // if control type
+    // type: host
+    message.status = 'readMessage before updateHostValue';
+    updateHostValue(message);
+  }
+  // save to local
+  chromeStorageLocalSet({
+    key: message.key,
+    value: JSON.stringify(message.value),
+  });
+  // save to aggregate local (for popup)
+  if (message.key[0] === '_' && !message.key.includes('.')) {
     saveToControls(message);
+  } else {
+    saveToHosts(message);
   }
   // to popup
   chrome.runtime.sendMessage(message);
@@ -126,7 +137,21 @@ const syncMessage = async (message = {}) => {
     });
   });
 };
+chrome.runtime.onMessage.addListener(syncMessage);
 
-chrome.runtime.onMessage.addListener((message) => {
-  syncMessage(message);
-});
+// This will be used by popup to read all controls and hosts - sendMessage({key: '_controls'})
+const controls = {
+  ...defaults,
+};
+
+const saveToHosts = async (host) => {
+  if (!host || !host.key || !host.value) return;
+  if (!controls._hosts) controls._hosts = {};
+  controls._hosts[host.key] = host.value;
+  syncMessage({ key: '_hosts', value: controls._hosts });
+};
+
+const saveToControls = async (message) => {
+  if (!message || !message.key || !message.value) return;
+  controls[message.key] = message.value;
+};

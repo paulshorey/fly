@@ -1,4 +1,8 @@
-export default function ads() {
+export default function gogole_ads() {
+  setTimeout(lib, 1000);
+}
+
+function lib() {
   let num_search_results = Array.from(window.document.body.querySelectorAll('#search h3')).length;
   // hide ads and annoying content
   // let selectors = ['#taw','#botstuff','#bottomads']

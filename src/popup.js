@@ -3,6 +3,6 @@
  */
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import EditOptions from './react/EditOptions';
+import Popup from './react/Popup';
 
-ReactDOM.render(<EditOptions />, document.getElementById('saveTheWeb_extensionPopup'));
+ReactDOM.render(<Popup />, document.getElementById('saveTheWeb_extensionPopup'));

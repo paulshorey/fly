@@ -15,44 +15,42 @@
  *    { key: "bing.com", value: {"andSearch":true} }
  */
 import './content.scss';
-import _bottomLeftButtons from './options/_bottomLeftButtons';
+import _bottomLeftButtons from './controls/_bottomLeftButtons';
+import _ads from './controls/_ads';
+import _popups from './controls/_popups';
+import _search from './controls/_search';
+import _ui from './controls/_ui';
+import * as objLib from './lib/obj';
 
-let host = {};
+const host = {};
 host.key = window.location.host.replace('www.', '');
 
-chrome.runtime.sendMessage({ action: 'get', key: '_bottomLeftButtons' });
-console.log('sendMessage get _bottomLeftButtons');
-
+// trigger message
+chrome.runtime.sendMessage({ key: '_version' });
+chrome.runtime.sendMessage({ key: '_bottomLeftButtons' });
+console.log('content sendMessage get control _bottomLeftButtons');
 setTimeout(function () {
-  chrome.runtime.sendMessage({ action: 'get', key: host.key });
-  console.log('sendMessage get ' + host.key);
+  chrome.runtime.sendMessage({ key: host.key });
+  console.log('content sendMessage get host = ' + host.key);
 }, 500);
 
+// respond to message
 chrome.runtime.onMessage.addListener((message) => {
-  console.log(`content message received: ${JSON.stringify(message)}`);
-  /*
-   * Control message:
-   */
-  if (message.key === '_bottomLeftButtons') {
-    _bottomLeftButtons({ message });
-    return;
-  } else if (message.key[0] === '_') {
-    return;
-  }
-  /*
-   * Host message:
-   */
-  // only concerned about current site, ignore all other messages
-  if (message.key !== host.key) return;
-  // perform actions
+  let consoleAction = 'log';
   if (message.value) {
+    consoleAction = 'warn';
   }
-  // // reload the page when value changes from TRUEthy to FALSEy
-  // // because things on the page have been modified, need to be reset
-  // if (host.value && message.value === null) {
-  //   window.location.reload();
-  //   return;
-  // }
-  // compare next time around
-  host.value = message.value;
+  console[consoleAction](`message ${JSON.stringify(message)}`);
+  if (message.key === '_bottomLeftButtons') {
+    // contorl
+    _bottomLeftButtons(!!message.value);
+    return;
+  } else if (message.key === host.key) {
+    // host (loaded 500+ ms after control)
+    _ads(objLib.objProp(message.value, '_ads', true));
+    _popups(objLib.objProp(message.value, '_popups', true));
+    _search(objLib.objProp(message.value, '_search', true));
+    _ui(objLib.objProp(message.value, '_ui', true));
+    return;
+  }
 });

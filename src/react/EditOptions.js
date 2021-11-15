@@ -7,17 +7,18 @@ export const Popup = ({}) => {
     messages[message.key] = message.value;
     setMessages({ ...messages });
   };
-  React.useEffect(() => {
-    chrome.runtime.sendMessage({ action: 'get', key: '_bottomLeftButtons' });
-    chrome.runtime.sendMessage({ action: 'get', key: '_hosts' });
+  const triggerMessages = () => {
+    chrome.runtime.sendMessage({ key: '_bottomLeftButtons' });
+    chrome.runtime.sendMessage({ key: '_hosts' });
     chrome.runtime.onMessage.addListener(handleNewMessage);
     return () => {
       chrome.runtime.onMessage.removeListener(handleNewMessage);
     };
-  }, []);
+  };
+  React.useEffect(triggerMessages, []);
 
   // edit messages
-  const onClick = ({}) => {
+  const onClick = ({ key, value }) => {
     console.log('onClick ' + key + ' messages in popup', {
       action: 'set',
       key,
@@ -32,12 +33,20 @@ export const Popup = ({}) => {
       {Object.entries(messages).map(([key, value]) => (
         <button
           onClick={() => {
-            onClick(key, value);
+            onClick({ key, value });
           }}
         >
           {key}
         </button>
       ))}
+      <hr />
+      <button
+        onClick={() => {
+          chrome.runtime.sendMessage({ key: '__reset' });
+        }}
+      >
+        Clear local options
+      </button>
     </div>
   );
 };

@@ -1,41 +1,22 @@
-import showBottomLeftButton from './showBottomLeftButton';
-import hideGoogleAds from './googleHideAds';
-
-const key = '_hidePopupsAndAds';
-const label = 'clean';
-
-export default function (enabledGlobally) {
-  if (!enabledGlobally) {
-    showBottomLeftButton({ key, disabledGlobally: true });
+/*
+ * Module
+ */
+let wasEnabled;
+export default function _popups(enabled) {
+  console.log('loaded _popups');
+  // reload the page
+  // when value changes from TRUEthy to FALSEy because things on the page have been modified
+  if (wasEnabled === true && enabled === false) {
+    window.location.reload();
     return;
   }
+  wasEnabled = enabled;
 
-  let enabled = true;
-  let host = window.location.host.replace('www.', '');
-
-  // if (enabled) {
-  //   let local = window.localStorage.getItem(key + '-disable-' + host);
-  //   if (typeof local === 'string') {
-  //     enabled = !JSON.parse(local);
-  //   } else {
-  //     if (host.split('.').length > 2) {
-  //       enabled = false;
-  //     }
-  //   }
-  // }
-
-  // do not run
-  if (!enabled) {
-    showBottomLeftButton({ key, enabled: false, label, host });
-    return;
-  }
-
-  // run
-  showBottomLeftButton({ key, enabled: true, label, host });
-  _hidePopupsAndAds({ host });
-  setTimeout(_hidePopupsAndAds, 1000);
-  setTimeout(_hidePopupsAndAds, 3000);
-  setTimeout(_hidePopupsAndAds, 5000);
+  // do the things
+  hidePopupsAndAds();
+  setTimeout(hidePopupsAndAds, 1000);
+  setTimeout(hidePopupsAndAds, 3000);
+  setTimeout(hidePopupsAndAds, 5000);
 }
 
 /*
@@ -81,20 +62,12 @@ function invisibleEl(el, because = '') {
   el.style.setProperty('pointer-events', 'none', 'important');
 }
 
-function _hidePopupsAndAds({ host }) {
+function hidePopupsAndAds() {
   console.warn('Kill popups and ads on page...');
   let DEBUG1 = false; // which stuff to hide/show
   let DEBUG2 = false; // localStorage/indexDB
   let DEBUG3 = false; // buttons inside cookie banner
   let DEBUG4 = false; // buttons inside cookie banner - advanced
-
-  /*
-   * GOOGLE specific fixes
-   */
-  if (host === 'google.com') {
-    hideGoogleAds();
-    return;
-  }
 
   /*
    * FREEZE GIFs
@@ -470,146 +443,6 @@ function _hidePopupsAndAds({ host }) {
         //     elb.click()
         //   }
         // }
-      }
-    }
-  }
-}
-
-function fixGooglePreferences() {
-  let buttons = window.document.querySelector('#form-buttons');
-  if (buttons) {
-    buttons.style.position = 'fixed';
-    buttons.style.top = '78px';
-  }
-}
-
-function fixGoogleSearch() {
-  // open external links in new tab
-  let links = Array.from(window.document.body.querySelectorAll('#search a'));
-  for (let link of links) {
-    if (!link.dataset.ved) continue;
-    link.dataset.ved = '';
-    link.removeAttribute('data-ved', '');
-    link.removeAttribute('ping', '');
-    link.setAttribute('target', '_blank');
-  }
-}
-
-function fixGoogleAds() {
-  let num_search_results = Array.from(window.document.body.querySelectorAll('#search h3')).length;
-  // hide ads and annoying content
-  // let selectors = ['#taw','#botstuff','#bottomads']
-  let botstuff = window.document.querySelector('#botstuff');
-  if (botstuff) {
-    botstuff.style.opacity = '0.33';
-    // botstuff.style.display = "none"
-    // botstuff.parentNode.removeChild(botstuff)
-  }
-  let bads = window.document.querySelector('#bottomads');
-  if (bads) {
-    // bads.style.opacity = "0.33"
-    bads.style.display = 'none';
-  }
-  let tads = window.document.querySelector('#taw');
-  if (tads) {
-    // tads.style.opacity = "0.33"
-    tads.style.display = 'none';
-  }
-  let adlists = window.document.querySelectorAll('#taw [role="list"], #taw [role="list"]');
-  for (let adlist of Array.from(adlists)) {
-    if (adlist) {
-      // adlist.style.opacity = "0.33"
-      adlist.style.display = 'none';
-    }
-  }
-  let topStoriesTitle = document.querySelector('title-with-lhs-icon');
-  if (topStoriesTitle) {
-    try {
-      topStoriesTitle.style.border = 'solid 5px red';
-      topStoriesTitle.parentElement.parentElement.parentElement.style.display = 'none';
-    } catch (e) {}
-  }
-  // let localResult = document.querySelector("g-img")
-  // if (localResult) {
-  //   try {
-  //     localResult.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = "none"
-  //   } catch (e) {}
-  // }
-  let accordions = window.document.querySelectorAll('g-accordion-expander');
-  for (let accordion of Array.from(accordions)) {
-    if (accordion) {
-      // accordion.style.opacity = "0.33"
-      accordion.style.display = 'none';
-    }
-  }
-  let specials = window.document.querySelectorAll('g-section-with-header');
-  for (let special of Array.from(specials)) {
-    if (special) {
-      // special.style.opacity = "0.33"
-      special.parentElement.style.display = 'none';
-    }
-  }
-  let expandables = window.document.querySelectorAll('g-expandable-container');
-  for (let expandable of Array.from(expandables)) {
-    if (expandable) {
-      // expandable.style.opacity = "0.33"
-      expandable.style.display = 'none';
-    }
-  }
-  let nav = window.document.querySelector('#rcnt div[role="navigation"]');
-  if (nav) {
-    console.log('found nav', nav);
-    nav.style.marginTop = '80px';
-    nav.style.marginBottom = '100px';
-  }
-  {
-    let aTags = document.querySelectorAll('h3 span');
-    let searchText = 'People also ask';
-    let found;
-    for (let i = 0; i < aTags.length; i++) {
-      if (aTags[i].textContent == searchText) {
-        found = aTags[i];
-        break;
-      }
-    }
-    if (found) {
-      found.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
-    }
-  }
-
-  let hrs = window.document.querySelectorAll('hr');
-  for (let hr of Array.from(hrs)) {
-    hr.style.display = 'none';
-  }
-
-  let gels = window.document.querySelectorAll('#search .g');
-  for (let gel of Array.from(gels)) {
-    gel.parentElement.style.marginBottom = '30px';
-    // gel.nextElementSibling.style.marginBottom = "30px"
-    // gel.previousElementSibling.style.marginBottom = "30px"
-  }
-
-  let extabar = window.document.querySelector('#extabar');
-  let stats = window.document.querySelector('#result-stats');
-  if (extabar) {
-    if (num_search_results >= 20) {
-      // OK good number of results
-      // if (stats) {
-      //   stats.innerHTML = num_search_results
-      // }
-      extabar.style.opacity = '0';
-      extabar.style.height = '30px';
-    } else {
-      extabar.style.opacity = '0.67';
-      extabar.style.height = '53.3px';
-      // HELP the person set more than 10 results
-      if (stats) {
-        stats.innerHTML = `
-            <div>
-  <!--            <div><b>You're currently only getting 10 search results at a time!</b></div>-->
-              Open <a href="https://www.google.com/preferences">Google Preferences</a> to enable more than 10 results on each page.
-            </div>
-          `;
       }
     }
   }
