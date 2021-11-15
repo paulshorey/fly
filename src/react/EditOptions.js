@@ -27,7 +27,7 @@ export const Popup = ({}) => {
     chrome.runtime.sendMessage({ action: 'set', key, value: !value });
   };
   return (
-    <div>
+    <div className="saveTheWeb_EditorOptions">
       {/* <h3>host = {JSON.stringify(host)}</h3> */}
       <h3>messages = {JSON.stringify(messages)}</h3>
       {Object.entries(messages).map(([key, value]) => (

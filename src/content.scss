@@ -15,4 +15,10 @@
     display: inline;
     border: none;
   }
+  .saveTheWeb_EditorOptions {
+    display: none;
+  }
+  &:hover .saveTheWeb_EditorOptions {
+    display: block;
+  }
 }
